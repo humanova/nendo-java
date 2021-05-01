@@ -12,11 +12,11 @@ enum BinaryOpType {
 }
 
 public class AST {
-    abstract class Node {
+    static abstract class Node {
         int line;
     }
 
-    class IdNode extends Node {
+    static class IdNode extends Expr {
         String id;
 
         IdNode(String id) {
@@ -28,7 +28,7 @@ public class AST {
         }
     }
 
-    class Int extends Node {
+    static class Int extends Expr {
         long value;
 
         Int(long value) {
@@ -40,34 +40,38 @@ public class AST {
         }
     }
 
-    abstract class Stmt extends Node {
+    static abstract class Stmt extends Node {
 
     }
 
-    class AssignStmt extends Stmt {
-        AST.Expr left;
+    static class AssignStmt extends Stmt {
+        AST.IdNode left;
         AST.Expr right;
         BinaryOpType op;
 
-        AssignStmt(AST.Expr left, AST.Expr right) {
+        AssignStmt(AST.IdNode left, AST.Expr right) {
             this.left = left;
             this.right = right;
         }
 
-        AssignStmt(AST.Expr left, AST.Expr right, BinaryOpType op) {
+        AssignStmt(AST.IdNode left, AST.Expr right, BinaryOpType op) {
             this.left = left;
             this.right = right;
             this.op = op;
         }
 
         public String toString() {
-            return String.format("[AssignStmt %s (%s %s)]", op.name(), left.line, right.line);
+            String opName = "";
+            if (op != null) {
+                opName = op.name();
+            }
+            return String.format("[AssignStmt %s (%s %s)]", opName, left, right);
         }
     }
 
-    class Expr extends Node { }
+    static class Expr extends Node { }
 
-    class BinaryOp extends Expr {
+    static class BinaryOp extends Expr {
         BinaryOpType op;
         AST.Expr left;
         AST.Expr right;
@@ -79,11 +83,11 @@ public class AST {
         }
 
         public String toString() {
-            return String.format("[BinaryOp %s (%s %s)]", op.name(), left.line, right.line);
+            return String.format("[BinaryOp %s (%s %s)]", op.name(), left, right);
         }
     }
 
-    class UnaryOp extends Expr {
+    static class UnaryOp extends Expr {
         BinaryOpType op;
         AST.Expr child;
 
@@ -93,7 +97,7 @@ public class AST {
         }
 
         public String toString() {
-            return String.format("[UnaryOp %s (%s)]", op.name(), child.line);
+            return String.format("[UnaryOp %s (%s)]", op.name(), child);
         }
     }
 

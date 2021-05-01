@@ -4,22 +4,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Lexer {
+    String text;
+    int textIdx;
+    char currentChar;
+    ArrayList<Token> tokens;
+
     // --  Define characters which will get tokenized
     String WHITESPACE = " \n\t";
     String DIGITS = "0123456789";
     String IDS = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     String OPS = "+-*/^|&%";
 
-    // --  Define "token <-> char" relations
+    // --  Define "char -> token" map
     private final HashMap<String, TokenType> OP = new HashMap<String, TokenType>() {{
-        put("+", TokenType.PLUS);
-        put("-", TokenType.MINUS);
-        put("*", TokenType.MUL);
-        put("/", TokenType.DIV);
-        put("|", TokenType.OR);
-        put("&", TokenType.AND);
-        put("^", TokenType.XOR);
-        put("%", TokenType.MOD);
+        put("+",  TokenType.PLUS);
+        put("-",  TokenType.MINUS);
+        put("*",  TokenType.MUL);
+        put("/",  TokenType.DIV);
+        put("|",  TokenType.OR);
+        put("&",  TokenType.AND);
+        put("^",  TokenType.XOR);
+        put("%",  TokenType.MOD);
         put("+=", TokenType.ADDEQ);
         put("-=", TokenType.SUBEQ);
         put("*=", TokenType.MULEQ);
@@ -36,11 +41,6 @@ public class Lexer {
     }};
     // ----
 
-    String text;
-    int textIdx;
-    char currentChar;
-    ArrayList<Token> tokens;
-
     public Lexer(String text) {
         this.text = text;
         textIdx = -1;
@@ -51,7 +51,7 @@ public class Lexer {
 
     private void advance() {
         if (textIdx < text.length()-1) {
-            textIdx += 1;
+            textIdx++;
             currentChar = text.charAt(textIdx);
         } else {
             currentChar = '\0';
