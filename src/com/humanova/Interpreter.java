@@ -33,8 +33,8 @@ public class Interpreter {
         ArrayList<Token> tokens = lexer.generateTokens(text);
         AST.Node ast = parser.parse(tokens);
 
-        System.out.println("Tokens : " + tokens.toString());
-        System.out.println("AST : " + ast.toString());
+        // System.out.println("Tokens : " + tokens.toString());
+        // System.out.println("AST : " + ast.toString());
 
         topNode = ast;
         currentNode = ast;
@@ -44,7 +44,7 @@ public class Interpreter {
         }
         else if (ast instanceof AST.Expr) {
             double val = visitExpr(((AST.Expr) ast));
-            System.out.printf("\n%s\n", val);
+            System.out.printf("%s\n", val);
         }
         else {
             raiseInterpreterError();
@@ -54,6 +54,9 @@ public class Interpreter {
     public void interpret(AST.Node ast) {
         topNode = ast;
         currentNode = ast;
+
+        // System.out.println("Tokens : " + tokens.toString());
+        // System.out.println("AST : " + ast.toString());
 
         if (ast instanceof AST.AssignStmt) {
             visitAssignStmt((AST.AssignStmt) ast);
@@ -83,34 +86,10 @@ public class Interpreter {
             if (assignStmt.op == null) {
                 v.value = rVal;
             } else {
-                switch (assignStmt.op) {
-                    case ADD:
-                        v.value += rVal;
-                        break;
-                    case SUB:
-                        v.value -= rVal;
-                        break;
-                    case MUL:
-                        v.value *= rVal;
-                        break;
-                    case DIV:
-                        v.value /= rVal;
-                        break;
-                    case MOD:
-                        v.value %= rVal;
-                        break;
-                    case OR:
-                        v.value = (int) v.value | (int) rVal;
-                        break;
-                    case AND:
-                        v.value = (int) v.value & (int) rVal;
-                        break;
-                    case XOR:
-                        v.value = (int) v.value ^ (int) rVal;
-                        break;
-                }
+                v.value = doBinaryOp(v.value, rVal, assignStmt.op);
             }
-        } else if (assignStmt.op == null) {
+        }
+        else if (assignStmt.op == null) {
             v = new Var(assignStmt.left.id, currentScope, rVal);
             variableList.add(v);
         } else {
@@ -134,24 +113,7 @@ public class Interpreter {
         } else if (expr instanceof AST.BinaryOp) {
             double v1 = visitExpr(((AST.BinaryOp) expr).left);
             double v2 = visitExpr(((AST.BinaryOp) expr).right);
-            switch (((AST.BinaryOp) expr).op) {
-                case ADD:
-                    return v1 + v2;
-                case SUB:
-                    return v1 - v2;
-                case MUL:
-                    return v1 * v2;
-                case DIV:
-                    return v1 / v2;
-                case MOD:
-                    return v1 % v2;
-                case OR:
-                    return (int)v1 | (int)v2; // gotta think more about these casts...
-                case AND:
-                    return (int)v1 & (int)v2;
-                case XOR:
-                    return (int)v1 ^ (int)v2;
-            }
+            return doBinaryOp(v1, v2, ((AST.BinaryOp) expr).op);
         } else if (expr instanceof AST.UnaryOp) {
             BinaryOpType op = ((AST.UnaryOp) expr).op;
             if (op == BinaryOpType.ADD) {
@@ -165,6 +127,37 @@ public class Interpreter {
         }
 
         return val;
+    }
+
+    public double doBinaryOp(double v1, double v2, BinaryOpType op) {
+        double res = -Double.MAX_VALUE;
+        switch (op) {
+            case ADD:
+                res = v1 + v2;
+                break;
+            case SUB:
+                res =  v1 - v2;
+                break;
+            case MUL:
+                res = v1 * v2;
+                break;
+            case DIV:
+                res =  v1 / v2;
+                break;
+            case MOD:
+                res = v1 % v2;
+                break;
+            case OR:
+                res =  (int)v1 | (int)v2; // gotta think more about these casts...
+                break;
+            case AND:
+                res = (int)v1 & (int)v2;
+                break;
+            case XOR:
+                res = (int)v1 ^ (int)v2;
+                break;
+        }
+        return res;
     }
 
     private void raiseInterpreterError() {
