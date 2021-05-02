@@ -1,5 +1,7 @@
 package com.humanova;
 
+import org.jcp.xml.dsig.internal.dom.DOMExcC14NMethod;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -14,6 +16,7 @@ public class Lexer {
     String DIGITS = "0123456789";
     String IDS = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     String OPS = "+-*/^|&%";
+    char DECIMAL_POINT = '.';
 
     // --  Define "char -> token" map
     private final HashMap<String, TokenType> OP = new HashMap<String, TokenType>() {{
@@ -67,6 +70,9 @@ public class Lexer {
             else if (DIGITS.indexOf(currentChar) != -1) {
                 tokens.add(generateNumber());
             }
+            else if (currentChar == DECIMAL_POINT) {
+                tokens.add(generateNumber());
+            }
             else if (IDS.indexOf(currentChar) != -1) {
                 tokens.add(generateId());
             }
@@ -97,12 +103,16 @@ public class Lexer {
     }
 
     public Token generateNumber() {
+        boolean decimalPointUsed = currentChar == DECIMAL_POINT ? true : false;
         StringBuilder numberStr = new StringBuilder("" + currentChar);
         advance();
 
         // must be a char
-        while (currentChar != '\0' && DIGITS.indexOf(currentChar) != -1) {
+        while (currentChar != '\0'
+                && (DIGITS.indexOf(currentChar) != -1 || (currentChar == DECIMAL_POINT && !decimalPointUsed))) {
             numberStr.append(currentChar);
+            if (currentChar == DECIMAL_POINT)
+                decimalPointUsed = true;
             advance();
         }
 
