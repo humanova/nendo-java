@@ -1,13 +1,15 @@
 package com.humanova;
 
 enum TokenType {
-    INT,
+    NUM,
     PLUS,
     MINUS,
     MUL,
     DIV,
     OR,
     AND,
+    LOGICALOR,
+    LOGICALAND,
     XOR,
     MOD,
     LPAREN,

@@ -36,7 +36,8 @@ public class Main {
 		while (!input.equals("quit()")) {
 			System.out.printf("> ");
 			input = scn.nextLine();
-			interpreter.interpret(input);
+			if (!input.equals(""))
+				interpreter.interpret(input);
 		}
     }
 }

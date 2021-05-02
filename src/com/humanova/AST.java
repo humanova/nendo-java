@@ -7,6 +7,8 @@ enum BinaryOpType {
     DIV,
     OR,
     AND,
+    LOGICALOR,
+    LOGICALAND,
     XOR,
     MOD
 }

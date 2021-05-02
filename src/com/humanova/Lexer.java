@@ -23,6 +23,8 @@ public class Lexer {
         put("/",  TokenType.DIV);
         put("|",  TokenType.OR);
         put("&",  TokenType.AND);
+        put("||", TokenType.LOGICALOR);
+        put("&&", TokenType.LOGICALAND);
         put("^",  TokenType.XOR);
         put("%",  TokenType.MOD);
         put("+=", TokenType.ADDEQ);
@@ -104,7 +106,7 @@ public class Lexer {
             advance();
         }
 
-        return new Token(TokenType.INT, numberStr.toString());
+        return new Token(TokenType.NUM, numberStr.toString());
     }
 
     public Token generateOp() {
