@@ -16,30 +16,6 @@ public class AST {
         int line;
     }
 
-    static class IdNode extends Expr {
-        String id;
-
-        IdNode(String id) {
-            this.id = id;
-        }
-
-        public String toString() {
-            return String.format("[IdNode %s]", id);
-        }
-    }
-
-    static class Int extends Expr {
-        long value;
-
-        Int(long value) {
-            this.value = value;
-        }
-
-        public String toString() {
-            return String.format("[Int %s]", value);
-        }
-    }
-
     static abstract class Stmt extends Node {
 
     }
@@ -70,6 +46,30 @@ public class AST {
     }
 
     static class Expr extends Node { }
+
+    static class IdNode extends Expr {
+        String id;
+
+        IdNode(String id) {
+            this.id = id;
+        }
+
+        public String toString() {
+            return String.format("[IdNode %s]", id);
+        }
+    }
+
+    static class Num extends Expr {
+        double value;
+
+        Num(double value) {
+            this.value = value;
+        }
+
+        public String toString() {
+            return String.format("[Num %s]", value);
+        }
+    }
 
     static class BinaryOp extends Expr {
         BinaryOpType op;

@@ -6,9 +6,10 @@ import java.util.HashMap;
 public class Parser {
     ArrayList<Token> tokens;
     Token currentToken;
+    Token nextToken;
     int tokenIdx;
 
-    private final HashMap<TokenType, BinaryOpType> AssignOpMap = new HashMap<TokenType, BinaryOpType>() {{
+    static final HashMap<TokenType, BinaryOpType> AssignOpMap = new HashMap<TokenType, BinaryOpType>() {{
         put(TokenType.ADDEQ, BinaryOpType.ADD);
         put(TokenType.SUBEQ, BinaryOpType.SUB);
         put(TokenType.MULEQ, BinaryOpType.MUL);
@@ -19,31 +20,38 @@ public class Parser {
         put(TokenType.MODEQ, BinaryOpType.MOD);
     }};
 
-    public Parser(ArrayList<Token> tokens) {
-        this.tokens = tokens;
-        tokenIdx = -1;
-
-        advance();
-    }
-
-    public void raiseParserException() {
-        throw new RuntimeException(String.format("[Parser] Invalid syntax, current token : '%s'", currentToken.toString()));
-    }
+    public Parser() { }
 
     private void advance() {
         if (tokenIdx < tokens.size()-1) {
             tokenIdx++;
             currentToken = tokens.get(tokenIdx);
+            if (tokenIdx < tokens.size()-2) {
+                nextToken = tokens.get(tokenIdx+1);
+            } else nextToken = null;
         } else {
             currentToken = null;
+            nextToken = null;
         }
     }
 
-    public AST.Node parse() {
+    public AST.Node parse(ArrayList<Token> tokens) {
+        this.tokens = tokens;
+        tokenIdx = -1;
+        advance();
+
         if (currentToken == null) {
             return null;
         }
-        return parseStmt();
+        if (currentToken.type == TokenType.ID
+                && (nextToken != null)
+                && (AssignOpMap.containsKey(nextToken.type)
+                || nextToken.type == TokenType.EQ)) {
+            return parseStmt();
+        }
+        else {
+            return parseExpr();
+        }
     }
 
     private AST.Stmt parseStmt() {
@@ -68,26 +76,16 @@ public class Parser {
             advance();
             assignStmt = new AST.AssignStmt(id, parseExpr());
         }
-        else if (AssignOpMap.containsKey(currentToken)) {
+        else if (AssignOpMap.containsKey(currentToken.type)) {
+            BinaryOpType op = AssignOpMap.get(currentToken.type);
             advance();
-            assignStmt = new AST.AssignStmt(id, parseExpr(), AssignOpMap.get(currentToken));
+            assignStmt = new AST.AssignStmt(id, parseExpr(), op);
         }
         else {
             raiseParserException();
         }
 
         return assignStmt;
-    }
-
-    private AST.IdNode parseId() {
-        AST.IdNode idNode = null;
-
-        if (currentToken.type == TokenType.ID) {
-            idNode = new AST.IdNode(currentToken.value);
-            advance();
-        }
-
-        return idNode;
     }
 
     // grammar = expr : term ((+|-) term)+
@@ -112,6 +110,10 @@ public class Parser {
             else if (currentToken.type == TokenType.XOR) {
                 advance();
                 expr = new AST.BinaryOp(BinaryOpType.XOR, term, parseTerm());
+            }
+            else if (currentToken.type == TokenType.MOD) {
+                advance();
+                expr = new AST.BinaryOp(BinaryOpType.MOD, term, parseTerm());
             }
         }
 
@@ -154,7 +156,7 @@ public class Parser {
         }
         else if (currTok.type == TokenType.INT) {
             advance();
-            factor = new AST.Int(Long.parseLong(currTok.value));
+            factor = new AST.Num(Double.parseDouble(currTok.value));
         }
         else if (currTok.type == TokenType.PLUS) {
             advance();
@@ -173,5 +175,20 @@ public class Parser {
         }
 
         return factor;
+    }
+
+    private AST.IdNode parseId() {
+        AST.IdNode idNode = null;
+
+        if (currentToken.type == TokenType.ID) {
+            idNode = new AST.IdNode(currentToken.value);
+            advance();
+        }
+
+        return idNode;
+    }
+
+    public void raiseParserException() {
+        throw new RuntimeException(String.format("[Parser] Invalid syntax, current token : '%s'", currentToken.toString()));
     }
 }

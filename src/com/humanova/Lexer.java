@@ -41,13 +41,7 @@ public class Lexer {
     }};
     // ----
 
-    public Lexer(String text) {
-        this.text = text;
-        textIdx = -1;
-        tokens = new ArrayList<Token>();
-
-        advance();
-    }
+    public Lexer() { }
 
     private void advance() {
         if (textIdx < text.length()-1) {
@@ -58,7 +52,12 @@ public class Lexer {
         }
     }
 
-    public ArrayList<Token> generateTokens() {
+    public ArrayList<Token> generateTokens(String text) {
+        this.text = text;
+        textIdx = -1;
+        tokens = new ArrayList<Token>();
+        advance();
+
         while (currentChar != '\0') {
             if (WHITESPACE.indexOf(currentChar) != -1) {
                 advance();
