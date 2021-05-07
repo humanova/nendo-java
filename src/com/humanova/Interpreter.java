@@ -147,15 +147,6 @@ public class Interpreter {
             case MOD:
                 res = v1 % v2;
                 break;
-            case OR:
-                res =  (int)v1 | (int)v2; // gotta think more about these casts...
-                break;
-            case AND:
-                res = (int)v1 & (int)v2;
-                break;
-            case XOR:
-                res = (int)v1 ^ (int)v2;
-                break;
             case LOGICALOR:
                 res = (v1 == 0.0 && v2 == 0.0) ? 0.0 : 1.0; // C-like logic, if one isn't zero then its 'true'
                 break;

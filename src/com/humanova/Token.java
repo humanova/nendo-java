@@ -6,11 +6,8 @@ enum TokenType {
     MINUS,
     MUL,
     DIV,
-    OR,
-    AND,
     LOGICALOR,
     LOGICALAND,
-    XOR,
     MOD,
     LPAREN,
     RPAREN,
@@ -25,12 +22,8 @@ enum TokenType {
     SUBEQ,
     MULEQ,
     DIVEQ,
-    OREQ,
-    ANDEQ,
-    XOREQ,
     MODEQ,
     COMMA
-
 }
 
 public class Token {

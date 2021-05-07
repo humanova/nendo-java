@@ -6,8 +6,9 @@ import java.util.Scanner;
 public class Main {
 
 	static private void Test() {
-		String text1 = "nendo = 3 * (564 / -4)";
-		String text2 = "nendo * 3 / -341 & 3 - 7";
+		//String text1 = "nendo = 3 * (564 / -4)";
+		String text1 = "f(a) + 4";
+		String text2 = "2 * 2 / -2 - 3 + 1";
 
 		Lexer lexer = new Lexer();
 		ArrayList<Token> tokens1 = lexer.generateTokens(text1);
@@ -39,5 +40,6 @@ public class Main {
 			if (!input.equals(""))
 				interpreter.interpret(input);
 		}
+
     }
 }

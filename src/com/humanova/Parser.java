@@ -14,18 +14,12 @@ public class Parser {
         put(TokenType.SUBEQ, BinaryOpType.SUB);
         put(TokenType.MULEQ, BinaryOpType.MUL);
         put(TokenType.DIVEQ, BinaryOpType.DIV);
-        put(TokenType.OREQ,  BinaryOpType.OR);
-        put(TokenType.ANDEQ, BinaryOpType.AND);
-        put(TokenType.XOREQ, BinaryOpType.XOR);
         put(TokenType.MODEQ, BinaryOpType.MOD);
     }};
 
     static final HashMap<TokenType, BinaryOpType> TermOpMap = new HashMap<TokenType, BinaryOpType>() {{
         put(TokenType.PLUS,  BinaryOpType.ADD);
         put(TokenType.MINUS, BinaryOpType.SUB);
-        put(TokenType.AND,   BinaryOpType.AND);
-        put(TokenType.OR,    BinaryOpType.OR);
-        put(TokenType.XOR,   BinaryOpType.XOR);
         put(TokenType.LOGICALAND, BinaryOpType.LOGICALAND);
         put(TokenType.LOGICALOR,  BinaryOpType.LOGICALOR);
         put(TokenType.MOD, BinaryOpType.MOD);
@@ -35,6 +29,14 @@ public class Parser {
         put(TokenType.MUL, BinaryOpType.MUL);
         put(TokenType.DIV, BinaryOpType.DIV);
     }};
+
+    private boolean containsTokenType(TokenType type) {
+        for (Token t : this.tokens) {
+            if (t.type == type)
+                return true;
+        }
+        return false;
+    }
 
     public Parser() { }
 
@@ -59,10 +61,7 @@ public class Parser {
         if (currentToken == null) {
             return null;
         }
-        if (currentToken.type == TokenType.ID
-                && (nextToken != null)
-                && (AssignOpMap.containsKey(nextToken.type)
-                || nextToken.type == TokenType.EQ)) {
+        if (containsTokenType(TokenType.EQ)) {
             return parseStmt();
         }
         else {
@@ -74,9 +73,15 @@ public class Parser {
         AST.Stmt stmt = null;
 
         // assign stmt
-        if (currentToken.type == TokenType.ID) {
+        if (currentToken.type == TokenType.ID
+                && nextToken.type == TokenType.EQ) {
             stmt = parseAssignStmt();
-        } else {
+        }
+        else if (currentToken.type == TokenType.ID
+                && nextToken.type == TokenType.LPAREN){
+            stmt = parseFuncDeclStmt();
+        }
+        else {
             raiseParserException();
         }
 
@@ -102,6 +107,29 @@ public class Parser {
         }
 
         return assignStmt;
+    }
+
+    private AST.FuncDeclStmt parseFuncDeclStmt() {
+        AST.FuncDeclStmt funcDeclStmt = null;
+        AST.IdNode funcId = parseId();
+        AST.Expr funcExpr = null;
+        ArrayList<AST.IdNode> params = new ArrayList<AST.IdNode>();
+
+        if (currentToken.type == TokenType.LPAREN) {
+            params = parseFuncParams();
+
+            if (currentToken.type == TokenType.EQ) {
+                advance();
+                funcExpr = parseExpr();
+                funcDeclStmt = new AST.FuncDeclStmt(funcId, funcExpr, params);
+            } else {
+                raiseParserException();
+            }
+        } else {
+            raiseParserException();
+        }
+
+        return funcDeclStmt;
     }
 
     // grammar = expr : term ((+|-) term)+
@@ -134,7 +162,7 @@ public class Parser {
         return term;
     }
 
-    // grammar = factor : num | +num | -num | "(" expr ")" | id
+    // grammar = factor : num | +num | -num | "(" expr ")" | id | func_id(arg_id,...)
     private AST.Expr parseFactor() {
         Token currTok = currentToken;
         AST.Expr factor = null;
@@ -160,6 +188,12 @@ public class Parser {
             advance();
             factor = new AST.UnaryOp(BinaryOpType.SUB, parseFactor());
         }
+        else if (currTok.type == TokenType.ID
+                && nextToken != null
+                && nextToken.type == TokenType.LPAREN) {
+            AST.IdNode funcId = parseId();
+            factor = new AST.FuncCall(funcId, parseFuncArgs());
+        }
         else if (currTok.type == TokenType.ID) {
             advance();
             factor = new AST.IdNode(currTok.value);
@@ -180,6 +214,53 @@ public class Parser {
         }
 
         return idNode;
+    }
+
+    private ArrayList<AST.Node> parseFuncArgs() {
+        if (currentToken.type == TokenType.LPAREN)
+            advance(); // skip '('
+        else raiseParserException();
+
+        ArrayList<AST.Node> args = new ArrayList<AST.Node>();
+        while (currentToken.type != TokenType.RPAREN) {
+            if (currentToken.type == TokenType.ID)
+                args.add(parseId());
+            else
+                args.add(parseExpr());
+
+            // if the current token isn't ',' or ')'
+            if (currentToken.type != TokenType.COMMA && currentToken.type != TokenType.RPAREN) {
+                raiseParserException();
+            }
+            if (currentToken.type != TokenType.RPAREN)
+                advance(); // skip ','
+        }
+        advance(); // skip ')'
+
+        return args;
+    }
+
+    private ArrayList<AST.IdNode> parseFuncParams() {
+        if (currentToken.type == TokenType.LPAREN)
+            advance(); // skip '('
+        else raiseParserException();
+
+        ArrayList<AST.IdNode> params = new ArrayList<AST.IdNode>();
+        while (currentToken.type != TokenType.RPAREN) {
+            if (currentToken.type == TokenType.ID)
+                params.add(parseId());
+            else raiseParserException();
+
+            // if the current token isn't ',' or ')'
+            if (currentToken.type != TokenType.COMMA && currentToken.type != TokenType.RPAREN) {
+                raiseParserException();
+            }
+            if (currentToken.type != TokenType.RPAREN)
+                advance(); // skip ','
+        }
+        advance(); // skip ')'
+
+        return params;
     }
 
     public void raiseParserException() {

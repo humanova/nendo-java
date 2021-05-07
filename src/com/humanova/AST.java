@@ -1,5 +1,7 @@
 package com.humanova;
 
+import java.util.ArrayList;
+
 enum BinaryOpType {
     ADD,
     SUB,
@@ -47,7 +49,50 @@ public class AST {
         }
     }
 
+    static class FuncDeclStmt extends Stmt {
+        AST.IdNode name;
+        AST.Expr body;
+        ArrayList<IdNode> params;
+
+        FuncDeclStmt(AST.IdNode name, AST.Expr body, ArrayList<IdNode> params) {
+            this.name = name;
+            this.body = body;
+            this.params = params;
+        }
+
+        public String toString() {
+            String paramsStr = "";
+            if (params != null) {
+                paramsStr = params.toString();
+            }
+            return String.format("[FuncDecl %s (%s) = %s]", name, paramsStr, body);
+        }
+
+    }
+
     static class Expr extends Node { }
+
+    static class FuncCall extends Expr {
+        AST.IdNode name;
+        ArrayList<AST.Node> args; // can be an idNode or expr
+
+        FuncCall(AST.IdNode name, ArrayList<AST.Node> args) {
+            this.name = name;
+            this.args = args;
+        }
+
+        FuncCall(AST.IdNode name) {
+            this.name = name;
+        }
+
+        public String toString() {
+            String argsStr = "";
+            if (args != null) {
+                argsStr = args.toString();
+            }
+            return String.format("[FuncCall %s (%s)]", name, argsStr);
+        }
+    }
 
     static class IdNode extends Expr {
         String id;

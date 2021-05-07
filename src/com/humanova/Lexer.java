@@ -1,7 +1,5 @@
 package com.humanova;
 
-import org.jcp.xml.dsig.internal.dom.DOMExcC14NMethod;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,38 +10,28 @@ public class Lexer {
     ArrayList<Token> tokens;
 
     // --  Define characters which will get tokenized
-    String WHITESPACE = " \n\t";
+    String WHITESPACE = " \t";
     String DIGITS = "0123456789";
     String IDS = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     String OPS = "+-*/^|&%";
     char DECIMAL_POINT = '.';
 
-    // --  Define "char -> token" map
-    private final HashMap<String, TokenType> OP = new HashMap<String, TokenType>() {{
+    // --  Define "str -> token" map
+    private final HashMap<String, TokenType> TokenMap = new HashMap<String, TokenType>() {{
         put("+",  TokenType.PLUS);
         put("-",  TokenType.MINUS);
         put("*",  TokenType.MUL);
         put("/",  TokenType.DIV);
-        put("|",  TokenType.OR);
-        put("&",  TokenType.AND);
         put("||", TokenType.LOGICALOR);
         put("&&", TokenType.LOGICALAND);
-        put("^",  TokenType.XOR);
         put("%",  TokenType.MOD);
         put("+=", TokenType.ADDEQ);
         put("-=", TokenType.SUBEQ);
         put("*=", TokenType.MULEQ);
         put("/=", TokenType.DIVEQ);
-        put("|=", TokenType.OREQ);
-        put("&=", TokenType.ANDEQ);
-        put("^=", TokenType.XOREQ);
         put("%=", TokenType.MODEQ);
     }};
 
-    private final HashMap<String, TokenType> KEYWORD = new HashMap<String, TokenType>() {{
-        put("func", TokenType.FUNC);
-        put("return", TokenType.RET);
-    }};
     // ----
 
     public Lexer() { }
@@ -103,7 +91,7 @@ public class Lexer {
     }
 
     public Token generateNumber() {
-        boolean decimalPointUsed = currentChar == DECIMAL_POINT ? true : false;
+        boolean decimalPointUsed = currentChar == DECIMAL_POINT;
         StringBuilder numberStr = new StringBuilder("" + currentChar);
         advance();
 
@@ -128,7 +116,7 @@ public class Lexer {
             advance();
         }
 
-        return new Token(OP.get(opStr.toString()));
+        return new Token(TokenMap.get(opStr.toString()));
     }
 
     public Token generateId() {
@@ -141,9 +129,6 @@ public class Lexer {
             advance();
         }
 
-        if (KEYWORD.containsKey(idStr.toString())) {
-            return new Token(KEYWORD.get(idStr.toString()), idStr.toString());
-        }
         return new Token(TokenType.ID, idStr.toString());
     }
 }
