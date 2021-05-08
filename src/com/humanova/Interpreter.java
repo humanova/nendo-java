@@ -113,7 +113,7 @@ public class Interpreter {
         } else if (expr instanceof AST.BinaryOp) {
             double v1 = visitExpr(((AST.BinaryOp) expr).left);
             double v2 = visitExpr(((AST.BinaryOp) expr).right);
-            return doBinaryOp(v1, v2, ((AST.BinaryOp) expr).op);
+            val =  doBinaryOp(v1, v2, ((AST.BinaryOp) expr).op);
         } else if (expr instanceof AST.UnaryOp) {
             BinaryOpType op = ((AST.UnaryOp) expr).op;
             if (op == BinaryOpType.ADD) {
