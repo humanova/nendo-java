@@ -22,17 +22,17 @@ public class Parser {
         put(TokenType.MINUS, BinaryOpType.SUB);
         put(TokenType.LOGICALAND, BinaryOpType.LOGICALAND);
         put(TokenType.LOGICALOR,  BinaryOpType.LOGICALOR);
-        put(TokenType.MOD, BinaryOpType.MOD);
     }};
 
     static final HashMap<TokenType, BinaryOpType> FactorOpMap = new HashMap<TokenType, BinaryOpType>() {{
         put(TokenType.MUL, BinaryOpType.MUL);
         put(TokenType.DIV, BinaryOpType.DIV);
+        put(TokenType.MOD, BinaryOpType.MOD);
     }};
 
-    private boolean containsTokenType(TokenType type) {
+    private boolean containsAssignOp() {
         for (Token t : this.tokens) {
-            if (t.type == type)
+            if (t.type == TokenType.EQ || AssignOpMap.containsKey(t.type))
                 return true;
         }
         return false;
@@ -61,7 +61,7 @@ public class Parser {
         if (currentToken == null) {
             return null;
         }
-        if (containsTokenType(TokenType.EQ)) {
+        if (containsAssignOp()) {
             return parseStmt();
         }
         else {
@@ -74,7 +74,7 @@ public class Parser {
 
         // assign stmt
         if (currentToken.type == TokenType.ID
-                && nextToken.type == TokenType.EQ) {
+                && (nextToken.type == TokenType.EQ || AssignOpMap.containsKey(nextToken.type))) {
             stmt = parseAssignStmt();
         }
         else if (currentToken.type == TokenType.ID
@@ -141,7 +141,7 @@ public class Parser {
         while (currentToken != null && TermOpMap.containsKey(currentToken.type)) {
             BinaryOpType op = TermOpMap.get(currentToken.type);
             advance();
-            expr = new AST.BinaryOp(op, term, parseTerm());
+            expr = new AST.BinaryOp(op, expr, parseTerm());
         }
 
         return expr;
@@ -156,7 +156,7 @@ public class Parser {
         while (currentToken != null && FactorOpMap.containsKey(currentToken.type)) {
             BinaryOpType op = FactorOpMap.get(currentToken.type);
             advance();
-            term = new AST.BinaryOp(op, leftFactor, parseTerm());
+            term = new AST.BinaryOp(op, term, parseTerm());
         }
 
         return term;
