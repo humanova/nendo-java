@@ -213,11 +213,11 @@ public class Interpreter {
             // return the evaluated expression
             Function fn = getFunction(((AST.FuncCall) expr).name.id);
             if (fn != null && fn.params.size() == ((AST.FuncCall) expr).args.size()) {
-                currentScope++;
                 for (int i = 0; i < fn.params.size(); i++) {
                     double value = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(i));
-                    variableList.add(new Var(fn.params.get(i), value, currentScope));
+                    variableList.add(new Var(fn.params.get(i), value, currentScope+1));
                 }
+                currentScope++;
                 val = visitExpr(fn.body);
                 currentScope--;
                 // remove function arguments from the list
