@@ -206,8 +206,8 @@ public class Interpreter {
         }
         else if (expr instanceof AST.FuncCall) {
             // check params size == args size
-            // currentScope += 1
             // add fn args to variables list (with the new scope)
+            // currentScope += 1
             // visit the function body
             // currentScope -= 1
             // return the evaluated expression
