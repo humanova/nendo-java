@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Stack;
 
 public class Interpreter {
     Lexer lexer;
@@ -15,6 +16,7 @@ public class Interpreter {
     int currentScope = 0;
     ArrayList<Var> variableList;
     ArrayList<Function> functionList;
+    Stack<Double> functionStack;
     HashMap<String, Symbol> symbolMap = new HashMap<String, Symbol>() {{
         put("pi",  new Var("pi", 3.141592653589, 0));
     }};
@@ -60,6 +62,7 @@ public class Interpreter {
         parser = new Parser();
         variableList = new ArrayList<Var>();
         functionList = new ArrayList<Function>();
+        functionStack = new Stack<Double>();
 
         Iterator it = symbolMap.entrySet().iterator();
         while (it.hasNext()) {
@@ -206,18 +209,25 @@ public class Interpreter {
         }
         else if (expr instanceof AST.FuncCall) {
             // check params size == args size
-            // add fn args to variables list (with the new scope)
+            // add fn args to stack
             // currentScope += 1
+            // add fn args to variable list
             // visit the function body
             // currentScope -= 1
-            // return the evaluated expression
+            // return the value
             Function fn = getFunction(((AST.FuncCall) expr).name.id);
             if (fn != null && fn.params.size() == ((AST.FuncCall) expr).args.size()) {
+                // push arguments to stack first (to support nested func calls)
                 for (int i = 0; i < fn.params.size(); i++) {
                     double value = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(i));
-                    variableList.add(new Var(fn.params.get(i), value, currentScope+1));
+                    functionStack.push(value);
                 }
                 currentScope++;
+                // create temp variables with the arg names
+                for (int i = 0; i < fn.params.size(); i++) {
+                    int idx = fn.params.size()-1-i;
+                    variableList.add(new Var(fn.params.get(idx), functionStack.pop(), currentScope));
+                }
                 val = visitExpr(fn.body);
                 currentScope--;
                 // remove function arguments from the list

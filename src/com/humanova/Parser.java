@@ -134,9 +134,7 @@ public class Parser {
 
     // grammar = expr : term ((+|-) term)+
     private AST.Expr parseExpr() {
-        AST.Expr expr = null;
-        AST.Expr term = parseTerm();
-        expr = term;
+        AST.Expr expr = parseTerm(); // get left expr
 
         while (currentToken != null && TermOpMap.containsKey(currentToken.type)) {
             BinaryOpType op = TermOpMap.get(currentToken.type);
@@ -149,9 +147,7 @@ public class Parser {
 
     // grammar = term : factor ((*|/) factor)+
     private AST.Expr parseTerm() {
-        AST.Expr term = null;
-        AST.Expr leftFactor = parseFactor();
-        term = leftFactor;
+        AST.Expr term = parseFactor(); // get left term
 
         while (currentToken != null && FactorOpMap.containsKey(currentToken.type)) {
             BinaryOpType op = FactorOpMap.get(currentToken.type);
@@ -223,7 +219,8 @@ public class Parser {
 
         ArrayList<AST.Node> args = new ArrayList<AST.Node>();
         while (currentToken.type != TokenType.RPAREN) {
-            if (currentToken.type == TokenType.ID)
+            if (currentToken.type == TokenType.ID
+                    && nextToken != null && nextToken.type != TokenType.LPAREN)
                 args.add(parseId());
             else
                 args.add(parseExpr());
