@@ -1,0 +1,15 @@
+poly2(a,b,c,x) = a*x*x + b*x + c         # define poly2 function
+discriminant(a,b,c) = b*b - (4*a*c)      # define discriminant function
+quadPositive(a,b,c) = (-b + sqrt(discriminant(a,b,c))) / 2*a     # quadratic formula (positive)
+quadNegative(a,b,c) = (-b - sqrt(discriminant(a,b,c))) / 2*a     # quadratic formula (negative)
+
+y = poly2(1, 2, -3, 1)                   # call poly2(), (x^2 + 2*x - 3) | x = 1
+d = discriminant(1, 2, -3)               # call discriminant()
+
+root1 = quadPositive(1, 2, -3)           # call quadPositive()
+root2 = quadNegative(1, 2, -3)
+
+y         # print y
+d         # print d
+root1     # print root1
+root2     # print root2

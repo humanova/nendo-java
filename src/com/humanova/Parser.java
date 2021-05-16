@@ -220,7 +220,9 @@ public class Parser {
         ArrayList<AST.Node> args = new ArrayList<AST.Node>();
         while (currentToken.type != TokenType.RPAREN) {
             if (currentToken.type == TokenType.ID
-                    && nextToken != null && nextToken.type != TokenType.LPAREN)
+                    && nextToken != null
+                    && nextToken.type != TokenType.LPAREN
+                    && nextToken.type == TokenType.COMMA)
                 args.add(parseId());
             else
                 args.add(parseExpr());

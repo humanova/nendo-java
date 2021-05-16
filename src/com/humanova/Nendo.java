@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-public class Main {
+public class Nendo {
 
 	static private void Test() {
 		String text1 = "nendo = 3 * (564 / -4)";
@@ -64,8 +64,7 @@ public class Main {
 			}
 
 			for (String ln : lines){
-				if (!ln.replaceAll("\\s+","").equals(""))
-					interpreter.interpret(ln);
+				interpreter.interpret(ln);
 			}
 
 		}

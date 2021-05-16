@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
+import com.humanova.Symbol.*;
 
 public class Interpreter {
     Lexer lexer;
@@ -15,55 +16,26 @@ public class Interpreter {
 
     int currentScope = 0;
     ArrayList<Var> variableList;
-    ArrayList<Function> functionList;
     Stack<Double> functionStack;
-    HashMap<String, Symbol> symbolMap = new HashMap<String, Symbol>() {{
-        put("pi",  new Var("pi", 3.141592653589, 0));
-        put("euler",  new Var("euler", 2.718281828459, 0));
-        put("phi",  new Var("phi", 1.6180339887498, 0));
+    ArrayList<Function> functionList;
 
+    // these are immutable
+    HashMap<String, Symb> symbolMap = new HashMap<String, Symb>() {{
+        put("pi",    new Var("pi", 3.14159265358979323, -1));
+        put("euler", new Var("euler", 2.718281828459045235, -1));
+        put("phi",   new Var("phi", 1.6180339887498, -1));
+        put("sqrt",  new SqrtFunction());
+        put("abs",   new AbsFunction());
+        put("ceil",  new CeilFunction());
+        put("floor", new FloorFunction());
+        put("log",   new LogFunction());
+        put("log10", new Log10Function());
+        put("sin",   new SinFunction());
+        put("cos",   new CosFunction());
+        put("acos",  new AcosFunction());
+        put("asin",  new AsinFunction());
+        put("atan",  new AtanFunction());
     }};
-
-    static abstract class Symbol {
-    }
-
-    static class Var extends Symbol {
-        String name;
-        double value; // double cuz i am lazy...
-        int scope;
-
-        public Var(String name, double value, int scope) {
-            this.name = name;
-            this.value = value;
-            this.scope = scope;
-        }
-    }
-
-    static class Function extends Symbol {
-        String name;
-        ArrayList<String> params;
-        AST.Expr body;
-
-        public Function(String name, AST.Expr body) {
-            this.name = name;
-            this.body = body;
-        }
-
-        public Function(String name, ArrayList<AST.IdNode> params, AST.Expr body) {
-            this.name = name;
-            this.body = body;
-
-            this.params = new ArrayList<String>();
-            for (AST.IdNode id : params) {
-                this.params.add(id.id);
-            }
-        }
-    }
-
-    /*
-    static class BuiltinFunction extends Function {
-        public BuiltinFunction(String name, Method functionRef)
-    }*/
 
     public Interpreter() {
         lexer = new Lexer();
@@ -71,15 +43,6 @@ public class Interpreter {
         variableList = new ArrayList<Var>();
         functionList = new ArrayList<Function>();
         functionStack = new Stack<Double>();
-
-        Iterator it = symbolMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            if (pair instanceof Var)
-                variableList.add((Var) pair);
-            else if (pair instanceof Function)
-                functionList.add((Function) pair);
-        }
     }
 
     public void interpret(String text) {
@@ -95,6 +58,10 @@ public class Interpreter {
         else if (ast instanceof AST.Expr) {
             double val = visitExpr(((AST.Expr) ast));
             System.out.printf("%s\n", val);
+        }
+        else if (ast == null) {
+            // may be a comment or empty space
+            // nothing to do, skip this one
         }
         else {
             raiseInterpreterError();
@@ -119,8 +86,9 @@ public class Interpreter {
 
     private Var getVariable(String name) {
         // if we are executing a function
-        if (currentScope != 0) {
+        if (currentScope != 0 && !symbolMap.containsKey(name)) {
             for (Var v : variableList) {
+                // variable must be in the same scope or must be a global constant
                 if (v.name.equals(name) && v.scope == currentScope)
                     return v;
             }
@@ -224,26 +192,32 @@ public class Interpreter {
             // currentScope -= 1
             // return the value
             Function fn = getFunction(((AST.FuncCall) expr).name.id);
-            if (fn != null && fn.params.size() == ((AST.FuncCall) expr).args.size()) {
-                // push arguments to stack first (to support nested func calls)
-                for (int i = 0; i < fn.params.size(); i++) {
-                    double value = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(i));
-                    functionStack.push(value);
+            if (fn instanceof BuiltinFunction && ((AST.FuncCall) expr).args.size() == 1) {
+                double argValue = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(0));
+                val = ((BuiltinFunction<Double>) fn).execute(argValue);
+            }
+            else {
+                if (fn != null && fn.params.size() == ((AST.FuncCall) expr).args.size()) {
+                    // push arguments to stack first (to support nested func calls)
+                    for (int i = 0; i < fn.params.size(); i++) {
+                        double argValue = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(i));
+                        functionStack.push(argValue);
+                    }
+                    currentScope++;
+                    // create temp variables with the arg names
+                    for (int i = 0; i < fn.params.size(); i++) {
+                        int idx = fn.params.size()-1-i;
+                        variableList.add(new Var(fn.params.get(idx), functionStack.pop(), currentScope));
+                    }
+                    val = visitExpr(fn.body);
+                    currentScope--;
+                    // remove function arguments from the list
+                    for (int i = 0; i < fn.params.size(); i++) {
+                        variableList.remove(variableList.size()-1);
+                    }
+                } else {
+                    raiseInterpreterError();
                 }
-                currentScope++;
-                // create temp variables with the arg names
-                for (int i = 0; i < fn.params.size(); i++) {
-                    int idx = fn.params.size()-1-i;
-                    variableList.add(new Var(fn.params.get(idx), functionStack.pop(), currentScope));
-                }
-                val = visitExpr(fn.body);
-                currentScope--;
-                // remove function arguments from the list
-                for (int i = 0; i < fn.params.size(); i++) {
-                    variableList.remove(variableList.size()-1);
-                }
-            } else {
-                raiseInterpreterError();
             }
         }
         else {

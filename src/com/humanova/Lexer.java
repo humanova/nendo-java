@@ -85,7 +85,7 @@ public class Lexer {
                 advance();
             }
             else if (currentChar == COMMENT) {
-                while (currentChar != '\n')
+                while (!(currentChar == '\n' || currentChar == '\0'))
                     advance();
             }
             else {
