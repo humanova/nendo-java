@@ -64,7 +64,7 @@ public class Interpreter {
             // nothing to do, skip this one
         }
         else {
-            raiseInterpreterError();
+            raiseInterpreterError("invalid AST");
         }
     }
 
@@ -79,8 +79,12 @@ public class Interpreter {
             double val = visitExpr(((AST.Expr) ast));
             System.out.printf("%s\n", val);
         }
+        else if (ast == null) {
+            // may be a comment or empty space
+            // nothing to do, skip this one
+        }
         else {
-            raiseInterpreterError();
+            raiseInterpreterError("invalid AST");
         }
     }
 
@@ -123,34 +127,41 @@ public class Interpreter {
             symbolMap.put(stmt.name.id, fn);
         }
         // if there isn't a variable named the same with the function, update the function body
-        else if (getVariable(stmt.name.id) == null) {
+        else if (getVariable(stmt.name.id) == null && !(fn instanceof BuiltinFunction)) {
             fn.body = stmt.body;
             fn.params = new ArrayList<String>();
             for (AST.IdNode param : stmt.params) {
                 fn.params.add(param.id);
             }
         }
+        else if (fn instanceof BuiltinFunction) {
+            raiseInterpreterError("built-in functions can not be declared");
+        }
         else {
-            raiseInterpreterError();
+            raiseInterpreterError("invalid function declaration");
         }
     }
 
     private void visitAssignStmt(AST.AssignStmt stmt) {
         Var v = getVariable(stmt.left.id);
         double rVal = visitExpr(stmt.right);
-        if (v != null) {
+        if (v != null && v.scope != -1) {
             if (stmt.op == null) {
                 v.value = rVal;
             } else {
                 v.value = doBinaryOp(v.value, rVal, stmt.op);
             }
         }
-        else if (stmt.op == null) {
+        else if (v == null && stmt.op == null) {
             v = new Var(stmt.left.id, rVal, 0);
             variableList.add(v);
             symbolMap.put(v.name, v);
-        } else {
-            raiseInterpreterError();
+        }
+        else if (v.scope == -1) {
+            raiseInterpreterError("built-in constants are immutable");
+        }
+        else {
+            raiseInterpreterError("invalid assign statement");
         }
     }
 
@@ -163,7 +174,7 @@ public class Interpreter {
             if (v != null){
                 val = v.value;
             } else {
-                raiseInterpreterError(); // todo: inform 'variable doesn't exist'
+                raiseInterpreterError("variable doesn't exist");
             }
         }
         else if (expr instanceof AST.Num) {
@@ -216,12 +227,12 @@ public class Interpreter {
                         variableList.remove(variableList.size()-1);
                     }
                 } else {
-                    raiseInterpreterError();
+                    raiseInterpreterError("invalid function call");
                 }
             }
         }
         else {
-            raiseInterpreterError(); // todo: inform about the error
+            raiseInterpreterError("invalid expression");
         }
 
         return val;
@@ -255,7 +266,7 @@ public class Interpreter {
         return res;
     }
 
-    private void raiseInterpreterError() {
-        throw new RuntimeException(String.format("[Interpreter] Invalid tree structure, current node : '%s'", currentNode.toString()));
+    private void raiseInterpreterError(String err) {
+        throw new RuntimeException(String.format("[Interpreter] Invalid tree structure : %s\n\tcurrent node : '%s'", err ,currentNode.toString()));
     }
 }
