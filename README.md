@@ -36,7 +36,7 @@ Nendo is a simple math interpreter with programmable features.
 ## Built-in functions
 
 ```
-# find the nautral logarithm of 2
+# find the natural logarithm of 2
 > log(2)
 0.6931471805599453
 
