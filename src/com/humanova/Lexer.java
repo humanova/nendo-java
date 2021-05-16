@@ -10,10 +10,11 @@ public class Lexer {
     ArrayList<Token> tokens;
 
     // --  Define characters which will get tokenized
-    String WHITESPACE = " \t";
+    String WHITESPACE = " \n\t";
     String DIGITS = "0123456789";
     String IDS = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     String OPS = "+-*/^|&%";
+    char COMMENT = '#';
     char DECIMAL_POINT = '.';
 
     // --  Define "str -> token" map
@@ -82,6 +83,10 @@ public class Lexer {
             else if (currentChar == ',') {
                 tokens.add(new Token(TokenType.COMMA));
                 advance();
+            }
+            else if (currentChar == COMMENT) {
+                while (currentChar != '\n')
+                    advance();
             }
             else {
                 throw new RuntimeException(String.format("Illegal Character : %s", currentChar));
