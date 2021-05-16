@@ -39,87 +39,107 @@ public class Symbol {
         }
     }
 
-    static abstract class BuiltinFunction<T> extends Function {
+    static class BuiltinFunction extends Function {
         public BuiltinFunction(String name) {
             super(name, null);
+        }
+    }
+
+    static abstract class BuiltinOneArgFunction<T> extends BuiltinFunction {
+        public BuiltinOneArgFunction(String name) {
+            super(name);
         }
         abstract double execute(T arg);
     }
 
-    static class SqrtFunction extends BuiltinFunction<Double> {
+    static abstract class BuiltinTwoArgFunction<T,D> extends BuiltinFunction {
+        public BuiltinTwoArgFunction(String name) {
+            super(name);
+        }
+        abstract double execute(T arg1, D arg2);
+    }
+
+    static class SqrtFunction extends BuiltinOneArgFunction<Double> {
         public SqrtFunction() { super("sqrt"); }
         double execute(Double arg) {
             return Math.sqrt(arg);
         }
     }
 
-    static class AbsFunction extends BuiltinFunction<Double> {
+    static class AbsFunction extends BuiltinOneArgFunction<Double> {
         public AbsFunction() { super("abs"); }
         double execute(Double arg) {
             return Math.abs(arg);
         }
     }
 
-    static class CeilFunction extends BuiltinFunction<Double> {
+    static class CeilFunction extends BuiltinOneArgFunction<Double> {
         public CeilFunction() { super("ceil"); }
         double execute(Double arg) {
             return Math.ceil(arg);
         }
     }
 
-    static class FloorFunction extends BuiltinFunction<Double> {
+    static class FloorFunction extends BuiltinOneArgFunction<Double> {
         public FloorFunction() { super("floor"); }
         double execute(Double arg) {
             return Math.floor(arg);
         }
     }
 
-    static class LogFunction extends BuiltinFunction<Double> {
+    static class LogFunction extends BuiltinOneArgFunction<Double> {
         public LogFunction() { super("log"); }
         double execute(Double arg) {
             return Math.log(arg);
         }
     }
 
-    static class Log10Function extends BuiltinFunction<Double> {
+    static class Log10Function extends BuiltinOneArgFunction<Double> {
         public Log10Function() { super("log10"); }
         double execute(Double arg) {
             return Math.log10(arg);
         }
     }
 
-    static class SinFunction extends BuiltinFunction<Double> {
+    static class SinFunction extends BuiltinOneArgFunction<Double> {
         public SinFunction() { super("sin"); }
         double execute(Double arg) {
             return Math.sin(arg);
         }
     }
 
-    static class CosFunction extends BuiltinFunction<Double> {
+    static class CosFunction extends BuiltinOneArgFunction<Double> {
         public CosFunction() { super("cos"); }
         double execute(Double arg) {
             return Math.cos(arg);
         }
     }
 
-    static class AcosFunction extends BuiltinFunction<Double> {
+    static class AcosFunction extends BuiltinOneArgFunction<Double> {
         public AcosFunction() { super("acos"); }
         double execute(Double arg) {
             return Math.acos(arg);
         }
     }
 
-    static class AsinFunction extends BuiltinFunction<Double> {
+    static class AsinFunction extends BuiltinOneArgFunction<Double> {
         public AsinFunction() { super("asin"); }
         double execute(Double arg) {
             return Math.asin(arg);
         }
     }
 
-    static class AtanFunction extends BuiltinFunction<Double> {
+    static class AtanFunction extends BuiltinOneArgFunction<Double> {
         public AtanFunction() { super("atan"); }
         double execute(Double arg) {
             return Math.atan(arg);
+        }
+    }
+
+    static class PowFunction extends BuiltinTwoArgFunction<Double, Double> {
+        public PowFunction() { super("pow"); }
+        double execute(Double arg1, Double arg2) {
+            return Math.pow(arg1, arg2);
         }
     }
 }

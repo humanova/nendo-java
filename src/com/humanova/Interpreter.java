@@ -2,8 +2,6 @@ package com.humanova;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Stack;
 import com.humanova.Symbol.*;
 
@@ -35,6 +33,7 @@ public class Interpreter {
         put("acos",  new AcosFunction());
         put("asin",  new AsinFunction());
         put("atan",  new AtanFunction());
+        put("pow",  new PowFunction());
     }};
 
     public Interpreter() {
@@ -195,19 +194,31 @@ public class Interpreter {
             }
         }
         else if (expr instanceof AST.FuncCall) {
-            // check params size == args size
-            // add fn args to stack
-            // currentScope += 1
-            // add fn args to variable list
-            // visit the function body
-            // currentScope -= 1
-            // return the value
             Function fn = getFunction(((AST.FuncCall) expr).name.id);
-            if (fn instanceof BuiltinFunction && ((AST.FuncCall) expr).args.size() == 1) {
-                double argValue = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(0));
-                val = ((BuiltinFunction<Double>) fn).execute(argValue);
+
+            if (fn instanceof BuiltinFunction) {
+                int argCount = ((AST.FuncCall) expr).args.size();
+                if (fn instanceof BuiltinOneArgFunction && argCount == 1) {
+                    double argVal = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(0));
+                    val = ((BuiltinOneArgFunction<Double>) fn).execute(argVal);
+                }
+                else if (fn instanceof BuiltinTwoArgFunction && argCount == 2) {
+                    double argVal1 = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(0));
+                    double argVal2 = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(1));
+                    val = ((BuiltinTwoArgFunction<Double, Double>) fn).execute(argVal1, argVal2);
+                }
+                else {
+                    raiseInterpreterError("invalid built-in function argument count");
+                }
             }
             else {
+                // check params size == args size
+                // add fn args to stack
+                // currentScope += 1
+                // add fn args to variable list
+                // visit the function body
+                // currentScope -= 1
+                // return the value
                 if (fn != null && fn.params.size() == ((AST.FuncCall) expr).args.size()) {
                     // push arguments to stack first (to support nested func calls)
                     for (int i = 0; i < fn.params.size(); i++) {
