@@ -19,6 +19,9 @@ public class Interpreter {
     Stack<Double> functionStack;
     HashMap<String, Symbol> symbolMap = new HashMap<String, Symbol>() {{
         put("pi",  new Var("pi", 3.141592653589, 0));
+        put("euler",  new Var("euler", 2.718281828459, 0));
+        put("phi",  new Var("phi", 1.6180339887498, 0));
+
     }};
 
     static abstract class Symbol {
@@ -56,6 +59,11 @@ public class Interpreter {
             }
         }
     }
+
+    /*
+    static class BuiltinFunction extends Function {
+        public BuiltinFunction(String name, Method functionRef)
+    }*/
 
     public Interpreter() {
         lexer = new Lexer();

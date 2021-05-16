@@ -1,0 +1,10 @@
+pow2(arg) = arg*arg
+
+a = 10
+a += 5
+
+b = a * (3 + 4 / 1.2) % 4
+
+
+
+pow2(a) + pow2(b)
