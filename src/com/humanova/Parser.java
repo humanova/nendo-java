@@ -91,7 +91,7 @@ public class Parser {
             stmt = parseLoopStmt();
         }
         else {
-            raiseParserException();
+            raiseParserException("could not parse statement");
         }
 
         return stmt;
@@ -112,7 +112,7 @@ public class Parser {
             assignStmt = new AST.AssignStmt(id, parseExpr(), op);
         }
         else {
-            raiseParserException();
+            raiseParserException("could not parse assign statement (expected '=' or an operator)");
         }
 
         return assignStmt;
@@ -132,10 +132,10 @@ public class Parser {
                 funcExpr = parseExpr();
                 funcDeclStmt = new AST.FuncDeclStmt(funcId, funcExpr, params);
             } else {
-                raiseParserException();
+                raiseParserException("could not parse function declaration (expected '=')");
             }
         } else {
-            raiseParserException();
+            raiseParserException("could not parse function declaration (expected '('");
         }
 
         return funcDeclStmt;
@@ -157,7 +157,7 @@ public class Parser {
             body.add(parseAssignStmt());
 
             if (currentToken != null && currentToken.type != TokenType.COMMA) {
-                raiseParserException();
+                raiseParserException("could not parse loop statement body (expected ',' or EOL)");
             }
 
             if (currentToken != null)
@@ -204,7 +204,7 @@ public class Parser {
             factor = parseExpr();
 
             if (currentToken.type != TokenType.RPAREN) {
-                raiseParserException();
+                raiseParserException("could not parse the expression inside parenthesis (expected ')')");
             }
             advance();
         }
@@ -231,7 +231,7 @@ public class Parser {
             factor = new AST.IdNode(currTok.value);
         }
         else {
-            raiseParserException();
+            raiseParserException("could not parse factor");
         }
 
         return factor;
@@ -251,7 +251,7 @@ public class Parser {
     private ArrayList<AST.Node> parseFuncArgs() {
         if (currentToken.type == TokenType.LPAREN)
             advance(); // skip '('
-        else raiseParserException();
+        else raiseParserException("could not parse function arguments (expected '(')");
 
         ArrayList<AST.Node> args = new ArrayList<AST.Node>();
         while (currentToken.type != TokenType.RPAREN) {
@@ -265,7 +265,7 @@ public class Parser {
 
             // if the current token isn't ',' or ')'
             if (currentToken.type != TokenType.COMMA && currentToken.type != TokenType.RPAREN) {
-                raiseParserException();
+                raiseParserException("could not parse function arguments (expected ',' or ')')");
             }
             if (currentToken.type != TokenType.RPAREN)
                 advance(); // skip ','
@@ -278,17 +278,17 @@ public class Parser {
     private ArrayList<AST.IdNode> parseFuncParams() {
         if (currentToken.type == TokenType.LPAREN)
             advance(); // skip '('
-        else raiseParserException();
+        else raiseParserException("could not parse function parameters (expected '(')");
 
         ArrayList<AST.IdNode> params = new ArrayList<AST.IdNode>();
         while (currentToken.type != TokenType.RPAREN) {
             if (currentToken.type == TokenType.ID)
                 params.add(parseId());
-            else raiseParserException();
+            else raiseParserException("function parameters must be an identifier (id)");
 
             // if the current token isn't ',' or ')'
             if (currentToken.type != TokenType.COMMA && currentToken.type != TokenType.RPAREN) {
-                raiseParserException();
+                raiseParserException("could not parse function parameters (expected ',' or ')')");
             }
             if (currentToken.type != TokenType.RPAREN)
                 advance(); // skip ','
@@ -298,7 +298,7 @@ public class Parser {
         return params;
     }
 
-    public void raiseParserException() {
-        throw new RuntimeException(String.format("[Parser] Invalid syntax, current token : '%s'", currentToken.toString()));
+    public void raiseParserException(String err) {
+        throw new RuntimeException(String.format("[Parser] Invalid syntax : %s\n\tcurrent token : '%s'", err, currentToken.toString()));
     }
 }
