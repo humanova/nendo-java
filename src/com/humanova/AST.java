@@ -22,6 +22,20 @@ public class AST {
 
     }
 
+    static class LoopStmt extends Stmt {
+        AST.Expr iteration;
+        ArrayList<AST.AssignStmt> body; // can only be assign statements
+
+        LoopStmt(AST.Expr iteration, ArrayList<AST.AssignStmt> body) {
+            this.iteration = iteration;
+            this.body = body;
+        }
+
+        public String toString() {
+            return String.format("[LoopStmt (%s) : %s]", iteration, body);
+        }
+    }
+
     static class AssignStmt extends Stmt {
         AST.IdNode left;
         AST.Expr right;

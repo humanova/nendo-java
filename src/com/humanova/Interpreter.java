@@ -9,7 +9,6 @@ public class Interpreter {
     Lexer lexer;
     Parser parser;
 
-    AST.Node topNode;
     AST.Node currentNode;
 
     int currentScope = 0;
@@ -48,7 +47,6 @@ public class Interpreter {
         ArrayList<Token> tokens = lexer.generateTokens(text);
         AST.Node ast = parser.parse(tokens);
 
-        topNode = ast;
         currentNode = ast;
 
         if (ast instanceof AST.Stmt) {
@@ -68,7 +66,6 @@ public class Interpreter {
     }
 
     public void interpret(AST.Node ast) {
-        topNode = ast;
         currentNode = ast;
 
         if (ast instanceof AST.Stmt) {
@@ -114,6 +111,9 @@ public class Interpreter {
         }
         else if (stmt instanceof AST.FuncDeclStmt) {
             visitFuncDeclStmt((AST.FuncDeclStmt) stmt);
+        }
+        else if (stmt instanceof AST.LoopStmt) {
+            visitLoopStmt((AST.LoopStmt) stmt);
         }
     }
 
@@ -161,6 +161,20 @@ public class Interpreter {
         }
         else {
             raiseInterpreterError("invalid assign statement");
+        }
+    }
+
+    private void visitLoopStmt(AST.LoopStmt stmt) {
+        for (int i = 0; i < visitExpr(stmt.iteration); i++) {
+            if (stmt.body.size() == 0)
+                raiseInterpreterError("loop should have a body (an expression or a statement");
+
+            for (AST.AssignStmt n : stmt.body) {
+                if (n instanceof AST.AssignStmt)
+                    visitStmt(n);
+                else
+                    raiseInterpreterError("loop body can only have assign statement(s)");
+            }
         }
     }
 

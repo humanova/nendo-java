@@ -82,6 +82,10 @@ public class Lexer {
                 tokens.add(new Token(TokenType.COMMA));
                 advance();
             }
+            else if (currentChar == ':') {
+                tokens.add(new Token(TokenType.COLON));
+                advance();
+            }
             else if (currentChar == COMMENT) {
                 while (!(currentChar == '\n' || currentChar == '\0'))
                     advance();
@@ -130,6 +134,10 @@ public class Lexer {
         while (currentChar != '\0' && (IDS.indexOf(currentChar) != -1 || DIGITS.indexOf(currentChar) != -1)) {
             idStr.append(currentChar);
             advance();
+        }
+
+        if (idStr.toString().equals("loop")) {
+            return new Token(TokenType.LOOP);
         }
 
         return new Token(TokenType.ID, idStr.toString());

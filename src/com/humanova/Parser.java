@@ -36,6 +36,14 @@ public class Parser {
         return false;
     }
 
+    private boolean containsLoopOp() {
+        for (Token t : this.tokens) {
+            if (t.type == TokenType.LOOP)
+                return true;
+        }
+        return false;
+    }
+
     public Parser() { }
 
     private void advance() {
@@ -59,7 +67,7 @@ public class Parser {
         if (currentToken == null) {
             return null;
         }
-        if (containsAssignOp()) {
+        if (containsAssignOp() || containsLoopOp()) {
             return parseStmt();
         }
         else {
@@ -78,6 +86,9 @@ public class Parser {
         else if (currentToken.type == TokenType.ID
                 && nextToken.type == TokenType.LPAREN){
             stmt = parseFuncDeclStmt();
+        }
+        else if (currentToken.type == TokenType.LOOP) {
+            stmt = parseLoopStmt();
         }
         else {
             raiseParserException();
@@ -128,6 +139,33 @@ public class Parser {
         }
 
         return funcDeclStmt;
+    }
+
+    // loop   expr    :    stmt, stmt,...
+    //   iteration count     body
+    private AST.LoopStmt parseLoopStmt() {
+        AST.LoopStmt loopStmt = null;
+        AST.Expr iterationExpr;
+        ArrayList<AST.AssignStmt> body = new ArrayList<AST.AssignStmt>();
+
+        advance(); // skip 'loop'
+
+        iterationExpr = parseExpr();
+        advance(); // skip ":"
+
+        while (currentToken != null) {
+            body.add(parseAssignStmt());
+
+            if (currentToken != null && currentToken.type != TokenType.COMMA) {
+                raiseParserException();
+            }
+
+            if (currentToken != null)
+                advance(); // skip ','
+        }
+        loopStmt = new AST.LoopStmt(iterationExpr, body);
+
+        return loopStmt;
     }
 
     // grammar = expr : term ((+|-) term)+

@@ -16,7 +16,9 @@ enum TokenType {
     MULEQ,
     DIVEQ,
     MODEQ,
-    COMMA
+    COMMA,
+    COLON,
+    LOOP
 }
 
 public class Token {
