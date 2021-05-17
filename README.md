@@ -2,14 +2,31 @@
 
 Nendo is a simple math interpreter with programmable features.
 
-## Variable declaration
+## Variables
+
 ```
 > a = 10
 > b = a + 5
 > c *= b + a
 ```
 
-## Function declaration
+## Loops
+
+```
+> a = 0
+> loop 10 : a+=2
+> a
+20
+
+# calculate fibonacci(10)
+> n = 0
+> i = 1
+> loop 10 : temp=n, n+=i, i=temp
+> n
+55.0
+```
+
+## Functions
 
 ```
 > cube(x) = x*x*x                   
