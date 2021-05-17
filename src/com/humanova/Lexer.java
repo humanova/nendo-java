@@ -23,8 +23,6 @@ public class Lexer {
         put("-",  TokenType.MINUS);
         put("*",  TokenType.MUL);
         put("/",  TokenType.DIV);
-        put("||", TokenType.LOGICALOR);
-        put("&&", TokenType.LOGICALAND);
         put("%",  TokenType.MOD);
         put("+=", TokenType.ADDEQ);
         put("-=", TokenType.SUBEQ);

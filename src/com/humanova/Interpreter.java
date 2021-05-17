@@ -267,12 +267,6 @@ public class Interpreter {
             case MOD:
                 res = v1 % v2;
                 break;
-            case LOGICALOR:
-                res = (v1 == 0.0 && v2 == 0.0) ? 0.0 : 1.0; // C-like logic, if one isn't zero then its 'true'
-                break;
-            case LOGICALAND:
-                res = (v1 == 0.0 || v2 == 0.0) ? 0.0 : 1.0; // C-like logic, if both isn't zero then its 'true'
-                break;
         }
         return res;
     }

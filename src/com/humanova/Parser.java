@@ -20,8 +20,6 @@ public class Parser {
     static final HashMap<TokenType, BinaryOpType> TermOpMap = new HashMap<TokenType, BinaryOpType>() {{
         put(TokenType.PLUS,  BinaryOpType.ADD);
         put(TokenType.MINUS, BinaryOpType.SUB);
-        put(TokenType.LOGICALAND, BinaryOpType.LOGICALAND);
-        put(TokenType.LOGICALOR,  BinaryOpType.LOGICALOR);
     }};
 
     static final HashMap<TokenType, BinaryOpType> FactorOpMap = new HashMap<TokenType, BinaryOpType>() {{
