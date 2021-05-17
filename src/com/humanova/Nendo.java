@@ -12,33 +12,7 @@ import java.util.stream.Collectors;
 
 public class Nendo {
 
-	static private void Test() {
-		String text1 = "nendo = 3 * (564 / -4)";
-		String text2 = "func(a,b,c) = 0";
-
-		Lexer lexer = new Lexer();
-		ArrayList<Token> tokens1 = lexer.generateTokens(text1);
-		ArrayList<Token> tokens2 = lexer.generateTokens(text2);
-
-		Parser parser = new Parser();
-		AST.Node ast1 = parser.parse(tokens1);
-		AST.Node ast2 = parser.parse(tokens2);
-
-		Interpreter interpreter = new Interpreter();
-
-		System.out.println("Text1 : " + text1);
-		System.out.println("Tokens1 : " + tokens1.toString());
-		System.out.println("AST1 : " + ast1.toString());
-		interpreter.interpret(ast1);
-
-		System.out.println("Text2 : " + text2);
-		System.out.println("Tokens2 : " + tokens2.toString());
-		System.out.println("AST2 : " + ast2.toString());
-		interpreter.interpret(ast2);
-	}
-
     public static void main(String[] args) {
-		//Test();
 		Interpreter interpreter = new Interpreter();
 
 		// commandline interpreter mode
