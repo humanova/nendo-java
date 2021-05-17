@@ -85,15 +85,13 @@ public class Interpreter {
     }
 
     private Var getVariable(String name) {
-        // if we are executing a function
-        if (currentScope != 0 && !symbolMap.containsKey(name)) {
+        if (currentScope != 0) {
             for (Var v : variableList) {
-                // variable must be in the same scope or must be a global constant
                 if (v.name.equals(name) && v.scope == currentScope)
                     return v;
             }
         }
-        else if (symbolMap.containsKey(name) && symbolMap.get(name) instanceof Var)
+        if (symbolMap.containsKey(name) && symbolMap.get(name) instanceof Var)
             return (Var)symbolMap.get(name);
         return null;
     }
