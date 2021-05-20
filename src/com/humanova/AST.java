@@ -15,7 +15,6 @@ enum BinaryOpType {
 
 public class AST {
     static abstract class Node {
-        int line;
     }
 
     static abstract class Stmt extends Node {
