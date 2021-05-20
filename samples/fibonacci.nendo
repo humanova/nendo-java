@@ -1,4 +1,4 @@
 A = (1 + sqrt(5)) / 2
 B = (1 - sqrt(5)) / 2
 fibonacci(n) = (pow(A, n+1) - pow(B, n+1)) / sqrt(5)
-fibonacci(10)
+floor(fibonacci(10))
