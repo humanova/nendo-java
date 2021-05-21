@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class Symbol {
     public static abstract class Symb {
+        public String name;
     }
 
     public static class Var extends Symb {
-        public String name;
         public double value; // double cuz i am lazy...
         public int scope;
 
@@ -19,7 +19,6 @@ public class Symbol {
     }
 
     public static class Function extends Symb {
-        public String name;
         public ArrayList<String> params;
         public AST.Expr body;
 
