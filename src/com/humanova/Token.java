@@ -22,8 +22,8 @@ enum TokenType {
 }
 
 public class Token {
-    TokenType type;
-    String value = "";
+    public TokenType type;
+    public String value = "";
 
     public Token(TokenType tk) {
         this.type = tk;

@@ -4,18 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Lexer {
-    String text;
-    int textIdx;
-    char currentChar;
-    ArrayList<Token> tokens;
+    private String text;
+    private int textIdx;
+    private char currentChar;
 
     // --  Define characters which will get tokenized
-    String WHITESPACE = " \n\t";
-    String DIGITS = "0123456789";
-    String IDS = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    String OPS = "+-*/^|&%";
-    char COMMENT = '#';
-    char DECIMAL_POINT = '.';
+    private String WHITESPACE = " \n\t";
+    private String DIGITS = "0123456789";
+    private String IDS = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private String OPS = "+-*/%";
+    private char COMMENT = '#';
+    private char DECIMAL_POINT = '.';
 
     // --  Define "str -> token" map
     private final HashMap<String, TokenType> TokenMap = new HashMap<String, TokenType>() {{
@@ -46,8 +45,9 @@ public class Lexer {
 
     public ArrayList<Token> generateTokens(String text) {
         this.text = text;
+        ArrayList<Token> tokens = new ArrayList<Token>();
         textIdx = -1;
-        tokens = new ArrayList<Token>();
+
         advance();
 
         while (currentChar != '\0') {

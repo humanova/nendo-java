@@ -4,20 +4,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 import com.humanova.Symbol.*;
+import com.humanova.AST.BinaryOpType;
 
 public class Interpreter {
-    Lexer lexer;
-    Parser parser;
+    private Lexer lexer;
+    private Parser parser;
 
-    AST.Node currentNode;
+    private AST.Node currentNode;
 
-    int currentScope = 0;
-    ArrayList<Var> variableList;
-    Stack<Double> functionStack;
-    ArrayList<Function> functionList;
+    private int currentScope = 0;
+    private ArrayList<Var> variableList;
+    private Stack<Double> functionStack;
+    private ArrayList<Function> functionList;
 
     // these are immutable
-    HashMap<String, Symb> symbolMap = new HashMap<String, Symb>() {{
+    private HashMap<String, Symb> symbolMap = new HashMap<String, Symb>() {{
         put("pi",    new Var("pi", 3.14159265358979323, -1));
         put("euler", new Var("euler", 2.718281828459045235, -1));
         put("phi",   new Var("phi", 1.6180339887498, -1));

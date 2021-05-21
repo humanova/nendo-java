@@ -2,14 +2,15 @@ package com.humanova;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import com.humanova.AST.BinaryOpType;
 
 public class Parser {
-    ArrayList<Token> tokens;
-    Token currentToken;
-    Token nextToken;
-    int tokenIdx;
+    private ArrayList<Token> tokens;
+    private Token currentToken;
+    private Token nextToken;
+    private int tokenIdx;
 
-    static final HashMap<TokenType, BinaryOpType> AssignOpMap = new HashMap<TokenType, BinaryOpType>() {{
+    private static final HashMap<TokenType, BinaryOpType> AssignOpMap = new HashMap<TokenType, BinaryOpType>() {{
         put(TokenType.ADDEQ, BinaryOpType.ADD);
         put(TokenType.SUBEQ, BinaryOpType.SUB);
         put(TokenType.MULEQ, BinaryOpType.MUL);
@@ -17,12 +18,12 @@ public class Parser {
         put(TokenType.MODEQ, BinaryOpType.MOD);
     }};
 
-    static final HashMap<TokenType, BinaryOpType> TermOpMap = new HashMap<TokenType, BinaryOpType>() {{
+    private static final HashMap<TokenType, BinaryOpType> TermOpMap = new HashMap<TokenType, BinaryOpType>() {{
         put(TokenType.PLUS,  BinaryOpType.ADD);
         put(TokenType.MINUS, BinaryOpType.SUB);
     }};
 
-    static final HashMap<TokenType, BinaryOpType> FactorOpMap = new HashMap<TokenType, BinaryOpType>() {{
+    private static final HashMap<TokenType, BinaryOpType> FactorOpMap = new HashMap<TokenType, BinaryOpType>() {{
         put(TokenType.MUL, BinaryOpType.MUL);
         put(TokenType.DIV, BinaryOpType.DIV);
         put(TokenType.MOD, BinaryOpType.MOD);

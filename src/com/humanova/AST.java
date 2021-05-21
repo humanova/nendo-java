@@ -2,28 +2,25 @@ package com.humanova;
 
 import java.util.ArrayList;
 
-enum BinaryOpType {
-    ADD,
-    SUB,
-    MUL,
-    DIV,
-    OR,
-    AND,
-    XOR,
-    MOD
-}
-
 public class AST {
-    static abstract class Node {
+    public enum BinaryOpType {
+        ADD,
+        SUB,
+        MUL,
+        DIV,
+        MOD
     }
 
-    static abstract class Stmt extends Node {
+    public static abstract class Node {
+    }
+
+    public static abstract class Stmt extends Node {
 
     }
 
-    static class LoopStmt extends Stmt {
-        AST.Expr iteration;
-        ArrayList<AST.AssignStmt> body; // can only be assign statements
+    public static class LoopStmt extends Stmt {
+        public AST.Expr iteration;
+        public ArrayList<AST.AssignStmt> body; // can only be assign statements
 
         LoopStmt(AST.Expr iteration, ArrayList<AST.AssignStmt> body) {
             this.iteration = iteration;
@@ -35,10 +32,10 @@ public class AST {
         }
     }
 
-    static class AssignStmt extends Stmt {
-        AST.IdNode left;
-        AST.Expr right;
-        BinaryOpType op;
+    public static class AssignStmt extends Stmt {
+        public AST.IdNode left;
+        public AST.Expr right;
+        public BinaryOpType op;
 
         AssignStmt(AST.IdNode left, AST.Expr right) {
             this.left = left;
@@ -60,10 +57,10 @@ public class AST {
         }
     }
 
-    static class FuncDeclStmt extends Stmt {
-        AST.IdNode name;
-        AST.Expr body;
-        ArrayList<IdNode> params;
+    public static class FuncDeclStmt extends Stmt {
+        public AST.IdNode name;
+        public AST.Expr body;
+        public ArrayList<IdNode> params;
 
         FuncDeclStmt(AST.IdNode name, AST.Expr body, ArrayList<IdNode> params) {
             this.name = name;
@@ -81,11 +78,11 @@ public class AST {
 
     }
 
-    static class Expr extends Node { }
+    public static class Expr extends Node { }
 
-    static class FuncCall extends Expr {
-        AST.IdNode name;
-        ArrayList<AST.Node> args; // can be an idNode or expr
+    public static class FuncCall extends Expr {
+        public AST.IdNode name;
+        public ArrayList<AST.Node> args; // can be an idNode or expr
 
         FuncCall(AST.IdNode name, ArrayList<AST.Node> args) {
             this.name = name;
@@ -105,8 +102,8 @@ public class AST {
         }
     }
 
-    static class IdNode extends Expr {
-        String id;
+    public static class IdNode extends Expr {
+        public String id;
 
         IdNode(String id) {
             this.id = id;
@@ -117,8 +114,8 @@ public class AST {
         }
     }
 
-    static class Num extends Expr {
-        double value;
+    public static class Num extends Expr {
+        public double value;
 
         Num(double value) {
             this.value = value;
@@ -129,10 +126,10 @@ public class AST {
         }
     }
 
-    static class BinaryOp extends Expr {
-        BinaryOpType op;
-        AST.Expr left;
-        AST.Expr right;
+    public static class BinaryOp extends Expr {
+        public BinaryOpType op;
+        public AST.Expr left;
+        public AST.Expr right;
 
         BinaryOp(BinaryOpType op, AST.Expr left, AST.Expr right) {
             this.op = op;
@@ -145,9 +142,9 @@ public class AST {
         }
     }
 
-    static class UnaryOp extends Expr {
-        BinaryOpType op;
-        AST.Expr child;
+    public static class UnaryOp extends Expr {
+        public BinaryOpType op;
+        public AST.Expr child;
 
         UnaryOp(BinaryOpType op, AST.Expr child) {
             this.op = op;
