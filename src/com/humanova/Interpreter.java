@@ -213,12 +213,12 @@ public class Interpreter {
                 int argCount = ((AST.FuncCall) expr).args.size();
                 if (fn instanceof BuiltinOneArgFunction && argCount == 1) {
                     double argVal = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(0));
-                    val = ((BuiltinOneArgFunction<Double>) fn).execute(argVal);
+                    val = ((BuiltinOneArgFunction) fn).execute(argVal);
                 }
                 else if (fn instanceof BuiltinTwoArgFunction && argCount == 2) {
                     double argVal1 = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(0));
                     double argVal2 = visitExpr((AST.Expr)((AST.FuncCall) expr).args.get(1));
-                    val = ((BuiltinTwoArgFunction<Double, Double>) fn).execute(argVal1, argVal2);
+                    val = ((BuiltinTwoArgFunction) fn).execute(argVal1, argVal2);
                 }
                 else {
                     raiseInterpreterError("invalid built-in function argument count");
