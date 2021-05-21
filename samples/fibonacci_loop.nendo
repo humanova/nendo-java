@@ -1,0 +1,10 @@
+# calculate fibonacci(n) using the iterative way
+
+num = 0      # the output var -- f(n)
+prev = 1     # previous num   -- f(n-1)
+n = 10
+
+# loop n times and process these statements in order
+loop n: temp=num, num+=prev, prev=temp
+
+num # print fib(n)
