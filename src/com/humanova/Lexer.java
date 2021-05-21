@@ -97,7 +97,7 @@ public class Lexer {
         return tokens;
     }
 
-    public Token generateNumber() {
+    private Token generateNumber() {
         boolean decimalPointUsed = currentChar == DECIMAL_POINT;
         StringBuilder numberStr = new StringBuilder("" + currentChar);
         advance();
@@ -114,7 +114,7 @@ public class Lexer {
         return new Token(TokenType.NUM, numberStr.toString());
     }
 
-    public Token generateOp() {
+    private Token generateOp() {
         StringBuilder opStr = new StringBuilder("" + currentChar);
         advance();
 
@@ -126,7 +126,7 @@ public class Lexer {
         return new Token(TokenMap.get(opStr.toString()));
     }
 
-    public Token generateId() {
+    private Token generateId() {
         StringBuilder idStr = new StringBuilder("" + currentChar);
         advance();
 
