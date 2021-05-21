@@ -1,0 +1,317 @@
+@startuml 
+title Nendo UML Class Diagram
+
+enum TokenType {
+    NUM
+    PLUS
+    MINUS
+    MUL
+    DIV
+    MOD
+    COMMA
+    COLON
+    LPAREN
+    RPAREN
+    ID
+    LOOP
+    EQ
+    ADDEQ
+    SUBEQ
+    MULEQ
+    DIVEQ
+    MODEQ
+}
+
+enum BinaryOpType {
+        ADD
+        SUB
+        MUL
+        DIV
+        MOD
+}
+
+class Token {
+    + TokenType type
+    + String value
+
+    + Token(tk : TokenType)
+    + Token(tk : TokenType, value : String)
+    + toString() : String
+}
+
+class Lexer {
+    - String Text
+    - int textIdx
+    - char currentChar
+
+    - String WHITESPACE
+    - String DIGITS
+    - String IDS
+    - String OPS
+    - char COMMENT
+    - char DEMICAL_POINT
+    - HashMap<String, TokenType> TokenMap
+
+    + Lexer()
+    + generateTokens(text : String) : ArrayList<Token>
+    - advance() : void
+    - generateNumber() : Token
+    - generateOp() : Token
+    - generateId() : Token
+}
+
+
+class IdNode {
+    + String id
+    
+    + IdNode(id : String)
+    + toString() : String
+}
+
+class Num {
+    + double value
+
+    + Num(value : double)
+    + toString() : String
+}
+
+class BinaryOp {
+    + BinaryOpType op
+    + Expr left
+    + Expr right
+
+    + BinaryOp(op : BinaryOpType, left : Expr, right : Expr)
+    + toString()
+}
+
+class UnaryOp {
+    + BinaryOpType op
+    + Expr child
+    
+    + UnaryOp(op : BinaryOpType, child Expr)
+    + toString() : String
+}
+
+class FuncCall {
+    + IdNode name
+    + ArrayList<Node> args
+
+    + FuncCall(name : IdNode)
+    + FuncCall(name : IdNode, args : ArrayList<Node>)
+    + toString() : String
+}
+
+class AssignStmt {
+    + IdNode left
+    + Expr right
+    + BinaryOpType op
+
+    + AssignStmt(left : IdNode, right : Expr)
+    + AssignStmt(left : IdNode, right : Expr, op : BinaryOpType)
+    + toString() : String
+}
+
+class LoopStmt {
+    + Expr iteration
+    + ArrayList<AssignStmt> body
+
+    + LoopStmt(iteration : Expr, body : ArrayList<AssignStmt>)
+    + toString() : String
+}
+
+class FuncDeclStmt {
+    + IdNode name
+    + Expr body
+    + ArrayList<IdNode> params
+
+    + FuncDeclStmt(name : IdNode, body : Expr, params : ArrayList<IdNode>)
+    + toString() : String
+}
+
+class AST
+class Node
+class Expr
+class Stmt
+
+AST +-- Node
+Node <|-- Expr
+Node <|-- Stmt
+Expr <|-- IdNode
+Expr <|-- Num
+Expr <|-- BinaryOp
+Expr <|-- UnaryOp
+Expr <|-- FuncCall
+Stmt <|-- AssignStmt
+Stmt <|-- LoopStmt
+Stmt <|-- FuncDeclStmt
+
+
+
+class Var {
+    + double value
+    + int scope
+
+    + Var(name: String, value : double, scope : int)
+}
+
+class Function {
+    + ArrayList<String> params
+    + Expr body
+
+    + Function(name : String, body : Expr)
+    + Function(name : String, params : ArrayList<String>, body : Expr)
+}
+
+class BuiltinFunction {
+    + BuiltinFunction(name : String)
+}
+
+abstract class BuiltinOneArgFunction {
+    + BuiltinOneArgFunction(name : String)
+    + double execute(double arg)
+}
+
+abstract class BuiltinTwoArgFunction {
+    + BuiltinTwoArgFunction(name : String)
+    + double execute(double arg1, double arg2)
+}
+
+class SqrtFunction {
+    + SqrtFunction()
+    + execute(arg : double) : double
+}
+
+class AbsFunction {
+    + AbsFunction()
+    + execute(arg : double) : double
+}
+
+class CeilFunction {
+    + CeilFunction()
+    + execute(arg : double) : double
+}
+
+class FloorFunction {
+    + FloorFunction()
+    + execute(arg : double) : double
+}
+
+class LogFunction {
+    + LogFunction()
+    + execute(arg : double) : double
+}
+
+class Log10Function {
+    + Log10Function()
+    + execute(arg : double) : double
+}
+
+class SinFunction {
+    + SinFunction()
+    + execute(arg : double) : double
+}
+
+class CosFunction {
+    + CosFunction()
+    + execute(arg : double) : double
+}
+
+class AcosFunction {
+    + AcosFunction()
+    + execute(arg : double) : double
+}
+
+class AsinFunction {
+    + AsinFunction()
+    + execute(arg : double) : double
+}
+
+class AtanFunction {
+    + AtanFunction()
+    + execute(arg : double) : double
+}
+
+class PowFunction {
+    + PowFunction()
+    + execute(arg1 : double, arg2 : double) : double
+}
+
+class Symbol
+class Symb {
+    + String name
+}
+
+Symbol +-- Symb
+Symb <|-- Var
+Symb <|-- Function
+Function <|-- BuiltinFunction
+BuiltinFunction <|-- BuiltinOneArgFunction
+BuiltinFunction <|-- BuiltinTwoArgFunction
+BuiltinOneArgFunction <|-- SqrtFunction
+BuiltinOneArgFunction <|-- AbsFunction
+BuiltinOneArgFunction <|-- CeilFunction
+BuiltinOneArgFunction <|-- FloorFunction
+BuiltinOneArgFunction <|-- LogFunction
+BuiltinOneArgFunction <|-- Log10Function
+BuiltinOneArgFunction <|-- SinFunction
+BuiltinOneArgFunction <|-- CosFunction
+BuiltinOneArgFunction <|-- AcosFunction
+BuiltinOneArgFunction <|-- AsinFunction
+BuiltinOneArgFunction <|-- AtanFunction
+BuiltinTwoArgFunction <|-- PowFunction
+
+
+class Parser {
+    - ArrayList<Token> tokens
+    - Token currentToken
+    - Token nextToken
+    - int tokenIdx
+    - HashMap<TokenType, BinaryOpType> AssignOpMap
+    - HashMap<TokenType, BinaryOpType> TermOpMap
+    - HashMap<TokenType, BinaryOpType> FactorOpMap
+    
+    + Parser()
+    + parse(tokens : ArrayList<Token>) : Node
+    - advance() : void
+    - parseStmt() : Stmt
+    - parseAssignStmt() : AssignStmt
+    - parseFuncDeclStmt() : FuncDeclStmt
+    - parseLoopStmt() : LoopStmt
+    - parseExpr() : Expr
+    - parseTerm() : Expr
+    - parseFactor() : Expr
+    - parseId() : IdNode
+    - parseFuncArgs() : ArrayList<Node>
+    - parseFuncParams() : ArrayList<IdNode>
+    - containsAssignOp() : boolean
+    - containsLoopOp() : boolean
+    + raiseParserException(err : String) : void
+
+}
+
+
+class Interpreter {
+    - Lexer lexer
+    - Parser parser
+    
+    - Node currentNode
+    - int currentScope
+    - ArrayList<Var> variableList
+    - Stack<Double> functionStack
+    - ArrayList<Function> functionList
+    - HashMap<String, Symb> symbolMap
+    
+    + Interpreter()
+    + interpret(text : String) : void
+    + interpret(ast : Node) : void
+    - getVariable(name : String) : Var
+    - getFunction(name : String) : Function
+    - visitStmt(stmt : Stmt) : void
+    - visitFuncDeclStmt(stmt : FuncDeclStmt) : void
+    - visitAssignstmt(stmt : AssignStmt) : void
+    - visitLoopStmt(stmt : LoopStmt) : void
+    - visitExpr(expr : Expr) : double
+    + doBinaryOp(v1 : double, v2 : double) : double
+    - raiseInterpreterError(err : String) : void
+}
+@enduml
